@@ -24,5 +24,6 @@ build
 # Local History for Visual Studio Code
 .history/
 
-# local scripts
+# local files
 *.sh
+deps/

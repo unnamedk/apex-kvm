@@ -4,6 +4,8 @@
 
 namespace apex::math
 {
+    // credits to:
+    // https://github.com/CasualX/apexbot/blob/master/src/solver.hpp
     class ProjectileWeapon
     {
     public:

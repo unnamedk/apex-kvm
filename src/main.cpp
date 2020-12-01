@@ -182,8 +182,15 @@ int main( int, char ** )
     apex::options->load();
     log_init( 1 );
 
+    auto file = popen( "pidof qemu-system-x86_64", "r" );
+    char pid[ 12 ] = { 0 };
+    fgets( pid, 12, file );
+    pclose( file );
+
+    spdlog::info( "found \"qemu-system-x86_64\" at id {}", pid );
+
     ConnectorInventory *inv = inventory_try_new();
-    CloneablePhysicalMemoryObj *conn = inventory_create_connector( inv, "kvm", "1016" );
+    CloneablePhysicalMemoryObj *conn = inventory_create_connector( inv, "kvm", pid );
     if ( !conn ) {
         inventory_free( inv );
         return 0;
