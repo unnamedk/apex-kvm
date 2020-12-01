@@ -177,10 +177,10 @@ void apex::cheats::esp::apply_glow( sdk::player_t *entity, std::vector<utils::wr
         static_cast<float>( color.b() ) * brightness,
     };
 
-    static bool glow_enabled = true;
-    static int glow_time = 1;
-    static float glow_distance = 5000.f;
-    static std::array<float, 6> max;
+    bool glow_enabled = true;
+    int glow_time = 1;
+    float glow_distance = 5000.f;
+    std::array<float, 6> max;
     if ( max[ 0 ] != std::numeric_limits<float>::max() ) {
         max.fill( std::numeric_limits<float>::max() );
     }
@@ -192,24 +192,12 @@ void apex::cheats::esp::apply_glow( sdk::player_t *entity, std::vector<utils::wr
         utils::process::get().write_ptr( entity->get_base() + 0x310, max.data(), sizeof( float ) * max.size() );
         utils::process::get().write( entity->get_base() + 0x33c, glow_distance );
     }
-
-    /*write_list.emplace_back( static_cast<Address>( entity->get_base() + 0x32c ), reinterpret_cast<uint8_t *>( &glow_duration ), sizeof( glow_duration ) );
-    write_list.emplace_back( static_cast<Address>( entity->get_base() + 0x33c ), reinterpret_cast<uint8_t *>( &glow_distance ), sizeof( glow_distance ) );
-    write_list.emplace_back( static_cast<Address>( entity->get_base() + 0x310 ), reinterpret_cast<uint8_t *>( max.data() ), max.size() * sizeof( float ) );
-    write_list.emplace_back( static_cast<Address>( entity->get_base() + 0x350 ), reinterpret_cast<uint8_t *>( &glow_time ), sizeof( glow_time ) );
-    write_list.emplace_back( static_cast<Address>( entity->get_base() + 0x360 ), reinterpret_cast<uint8_t *>( &glow_enabled ), sizeof( glow_enabled ) );*/
 }
 void apex::cheats::esp::apply_glow( sdk::item_t *entity, std::vector<utils::write_data_t> &write_list )
 {
-    /*utils::write_data_t data;
-        data.remote_address = static_cast<Address>( entity->get_base() + 0x2a8 );
-        data.local_buffer = reinterpret_cast<uint8_t *>( &enable );
-        data.size = sizeof( enable );
-        write_list.emplace_back( data );*/
-
     if ( entity_list::get().validate( entity ) && !entity->is_glown() ) {
-        static int enable = 1363184265;
-        utils::process::get().write( entity->get_base() + 0x2a8, enable, sizeof( int ) );
+        int enable = 1363184265;
+        utils::process::get().write( entity->get_base() + 0x2a8, enable );
     }
 }
 bool apex::cheats::esp::validate_player( sdk::player_t *player ) const noexcept
