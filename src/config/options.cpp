@@ -15,7 +15,7 @@ options_t::options_t()
 {
     auto pw = getenv( "SUDO_USER" );
     if ( !pw ) {
-        pw = "idkaname"; //getenv( "USER" );
+        pw = getenv( "USER" );
     }
 
     current_config = "/home" / fs::path { pw } / "Documents" / "Cheat Settings";
