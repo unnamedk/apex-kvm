@@ -13,18 +13,7 @@ std::optional<apex::config::options_t> apex::options = std::nullopt;
 
 options_t::options_t()
 {
-    auto pw = getenv( "SUDO_USER" );
-    if ( !pw ) {
-        pw = getenv( "USER" );
-    }
-
-    current_config = "/home" / fs::path { pw } / "Documents" / "Cheat Settings";
-
-    if ( !fs::exists( current_config ) ) {
-        fs::create_directory( current_config );
-    }
-
-    current_config /= "apex_settings.json";
+    current_config = fs::current_path() / "apex_settings.json";
     this->load();
 }
 

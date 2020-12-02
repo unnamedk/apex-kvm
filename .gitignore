@@ -25,5 +25,4 @@ build
 .history/
 
 # local files
-*.sh
 deps/

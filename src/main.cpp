@@ -79,7 +79,7 @@ void build_map()
     setting_map[ "visual.friend_color" ] = to_type( &options->visual.friend_color );
 }
 
-void start_server()
+void start_server( const char *local_ip )
 {
     using namespace httplib;
 
@@ -173,24 +173,36 @@ void start_server()
     } );
 
     spdlog::info( "starting web server" );
-    srv.listen( "192.168.1.200", 2222 );
+    srv.listen( local_ip, 2222 );
 }
 
-int main( int, char ** )
+void print_help( const char *path )
 {
+    spdlog::info( "usage: ./{} local_ip qemu_pid apex_pid", std::filesystem::path { path }.filename().string() );
+}
+
+int main( int argc, const char **argv )
+{
+    if ( argc < 4 ) {
+        spdlog::error( "invalid arguments" );
+        print_help( argv[ 0 ] );
+
+        return 1;
+    }
+
+    auto local_ip = argv[ 1 ];
+    auto qemu_pid = argv[ 2 ];
+    auto apex_pid = argv[ 3 ];
+
+    uint32_t apex_process_id = 0;
+    std::from_chars( apex_pid, apex_pid + strlen( apex_pid ), apex_process_id );
+
     apex::options.emplace();
     apex::options->load();
     log_init( 1 );
 
-    auto file = popen( "pidof qemu-system-x86_64", "r" );
-    char pid[ 12 ] = { 0 };
-    fgets( pid, 12, file );
-    pclose( file );
-
-    spdlog::info( "found \"qemu-system-x86_64\" at id {}", pid );
-
     ConnectorInventory *inv = inventory_try_new();
-    CloneablePhysicalMemoryObj *conn = inventory_create_connector( inv, "kvm", pid );
+    CloneablePhysicalMemoryObj *conn = inventory_create_connector( inv, "kvm", qemu_pid );
     if ( !conn ) {
         inventory_free( inv );
         return 0;
@@ -211,6 +223,20 @@ int main( int, char ** )
 
     apex::main_kernel = kernel;
 
+    auto apex_process = apex::utils::get_process_by_id( kernel, { apex_process_id } );
+    if ( !apex_process ) {
+        kernel_free( kernel );
+        inventory_free( inv );
+        spdlog::error( "game process (id {}) not found", apex_process_id );
+        return 1;
+    }
+
+    auto [ name, pid, base ] = *apex_process;
+    spdlog::info( "found process \"{}\" pid={} base={:#x}", name, pid, base );
+
+    apex::utils::process::get().set( base, pid );
+    options->misc.should_run = true;
+
     apex::cheats::offsets_t::get().init();
 
     std::thread t_misc( &apex::cheats::misc::run, std::ref( apex::cheats::misc::get() ) );
@@ -227,7 +253,7 @@ int main( int, char ** )
     t_esp.detach();
 
     // blocks
-    start_server();
+    start_server( local_ip );
 
     // only runs if an error occurs
     inventory_free( inv );

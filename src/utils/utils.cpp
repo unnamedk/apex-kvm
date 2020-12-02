@@ -70,3 +70,35 @@ bool apex::utils::are_movement_keys_pressed()
     return is_key_down( static_cast<keycode_t>( 'W' ) ) || is_key_down( static_cast<keycode_t>( 'A' ) ) ||
         is_key_down( static_cast<keycode_t>( 'S' ) ) || is_key_down( static_cast<keycode_t>( 'D' ) );
 }
+std::optional<std::tuple<std::string, PID, Address>> apex::utils::get_process_by_id( Kernel *kernel, std::initializer_list<uint32_t> pids )
+{
+    Win32ProcessInfo *processes[ 512 ];
+    auto max = kernel_process_info_list( kernel, processes, 512 );
+
+    std::optional<std::tuple<std::string, PID, Address>> ans;
+
+    for ( uintptr_t i = 0; i < max; ++i ) {
+        auto process = processes[ i ];
+
+        // only allocate these resources if the process isn't found
+        if ( ans == std::nullopt ) {
+            OsProcessInfoObj *info = process_info_trait( process );
+
+            char name[ 32 ] = { 0 };
+            os_process_info_name( info, name, 32 );
+
+            auto pid = os_process_info_pid( info );
+            for ( auto &n : pids ) {
+                if ( pid == n ) {
+                    ans = std::make_tuple( std::string( name ), pid, process_info_section_base( process ) );
+                }
+            };
+
+            os_process_info_free( info );
+        }
+
+        process_info_free( process );
+    }
+
+    return ans;
+}

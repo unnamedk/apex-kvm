@@ -185,8 +185,9 @@ bool aim::validate_entity( sdk::entity_t *entity ) const noexcept
             return false;
         }
 
-        if ( !player->is_alive() ||
-            ( player->get_pos().z() > 11000.f /* in dropship */ ) ) {
+        if ( !player->is_alive() /*||
+            ( player->get_pos().z() > 11000.f ) */
+        ) {
             return false;
         }
 
