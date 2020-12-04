@@ -42,17 +42,7 @@
                 onchange="changed('checkbox', 'aimbot.enabled', this.checked)">
             <label for="aimbotEnabled">enabled</label><br>
 
-            <select id="aimbotKey" onchange="changed('value', 'aimbot.key', this.value)">
-                <option value="1">mouse 1</option>
-                <option value="2">mouse 2</option>
-                <option value="4">mouse 3</option>
-                <option value="5">xbutton 1</option>
-                <option value="6">xbutton 2</option>
-                <option value="16">shift</option>
-                <option value="18">alt</option>
-                <option value="9">tab</option>
-                <option value="32">space</option>
-            </select>
+            <select id="aimbotKey" onchange="changed('value', 'aimbot.key', this.value)" class="optKeys"></select>
             <label for="aimbotKey">key</label><br>
 
             <input type="checkbox" id="aimbotRcsEnabled" name="aimbotRcsEnabled"
@@ -86,72 +76,48 @@
             <input type="checkbox" id="aimbotOnFriends" name="aimbotOnFriends"
                 onchange="changed('checkbox', 'aimbot.aim_on_friends', this.checked)">
             <label for="aimbotOnFriends">aim on friends</label><br>
+
             <input type="checkbox" id="aimbotOnDummies"
                 onchange="changed('checkbox', 'aimbot.aim_on_dummies', this.checked)">
-            <label for="aimbotOnDummies">aim on dummies</label><br>
+            <label for="aimbotOnDummies" data-toggle="tooltip" data-placement="top" title="firing range only">aim on
+                dummies</label><br>
+
             <input type="checkbox" id="aimbotTargetLock"
                 onchange="changed('checkbox', 'aimbot.target_lock', this.checked)">
-            <label for="aimbotTargetLock">target lock</label><br>
+            <label for="aimbotTargetLock" data-toggle="tooltip" data-placement="top"
+                title="only changes targets if it's not valid anymore">target lock</label><br>
+
             <input type="checkbox" id="aimbotVisCheck" onchange="changed('checkbox', 'aimbot.vis_check', this.checked)">
             <label for="aimbotVisCheck">visibility check</label><br>
+
             <input type="checkbox" id="aimbotRandomAimSpot"
                 onchange="changed('checkbox', 'aimbot.random_aim_spot', this.checked)">
-            <label for="aimbotRandomAimSpot">random aim spot</label><br>
+            <label for="aimbotRandomAimSpot" data-toggle="tooltip" data-placement="top"
+                title="randomize positions between a single hitbox">random aim spot</label><br>
 
             <input type="checkbox" id="aimbotSelectionSwitchOnKey"
                 onchange="changed('checkbox', 'aimbot.target_selection_switch_on_key', this.checked)">
             <label for="aimbotSelectionSwitchOnKey">change selection algorithm on key press</label><br>
-            <select id="aimbotSelectionSwitchKey"
-                onchange="changed('value', 'aimbot.target_selection_key', this.value)">
-                <option value="1">mouse 1</option>
-                <option value="2">mouse 2</option>
-                <option value="4">mouse 3</option>
-                <option value="5">xbutton 1</option>
-                <option value="6">xbutton 2</option>
-                <option value="16">shift</option>
-                <option value="18">alt</option>
-                <option value="9">tab</option>
-                <option value="32">space</option>
-            </select>
+
+            <select id="aimbotSelectionSwitchKey" class="optKeys"
+                onchange="changed('value', 'aimbot.target_selection_key', this.value)"></select>
             <label for="aimbotSelectionSwitchKey">algorithm switch on key</label><br>
 
             <hr>
-            <select id="aimbotPrimaryHitbox" onchange="changed('value', 'aimbot.primary_hitbox', this.value)">
-                <option value="10">head</option>
-                <option value="9">upper neck</option>
-                <option value="8">neck</option>
-                <option value="7">spine c</option>
-                <option value="6">spine b</option>
-                <option value="5">spine a</option>
-                <option value="14">left shoulder</option>
-                <option value="39">right shoulder</option>
-            </select>
+
+            <select id="aimbotPrimaryHitbox" class="optHitboxes"
+                onchange="changed('value', 'aimbot.primary_hitbox', this.value)"></select>
             <label for="aimbotPrimaryHitbox">primary hitbox</label><br>
-            <select id="aimbotSecondaryHitboxKey"
-                onchange="changed('value', 'aimbot.secondary_hitbox_key', this.value)">
-                <option value="1">mouse 1</option>
-                <option value="2">mouse 2</option>
-                <option value="4">mouse 3</option>
-                <option value="5">xbutton 1</option>
-                <option value="6">xbutton 2</option>
-                <option value="16">shift</option>
-                <option value="18">alt</option>
-                <option value="9">tab</option>
-                <option value="32">space</option>
-            </select>
+
+            <select id="aimbotSecondaryHitboxKey" class="optKeys"
+                onchange="changed('value', 'aimbot.secondary_hitbox_key', this.value)"></select>
             <label for="aimbotSecondaryHitboxKey">secondary hitbox key</label><br>
-            <select id="aimbotSecondaryHitbox" onchange="changed('value', 'aimbot.secondary_hitbox', this.value)">
-                <option value="10">head</option>
-                <option value="9">upper neck</option>
-                <option value="8">neck</option>
-                <option value="7">spine c</option>
-                <option value="6">spine b</option>
-                <option value="5">spine a</option>
-                <option value="14">left shoulder</option>
-                <option value="39">right shoulder</option>
-            </select>
+
+            <select id="aimbotSecondaryHitbox" class="optHitboxes"
+                onchange="changed('value', 'aimbot.secondary_hitbox', this.value)"></select>
             <label for="aimbotSecondaryHitbox">secondary hitbox</label><br>
         </div>
+
         <div id="esp" style='display:none;'>
             <input type="checkbox" id="visualEnabled" name="visualEnabled"
                 onchange="changed('checkbox', 'visual.enabled', this.checked)">
@@ -211,51 +177,92 @@
     </main>
 
     <script>
+        $(document).ready(function () {
+            var keys = {
+                o1: { value: 1, text: "mouse 1" },
+                o2: { value: 2, text: "mouse 2" },
+                o3: { value: 4, text: "mouse 3" },
+                o4: { value: 5, text: "xbutton 1" },
+                o5: { value: 6, text: "xbutton 2" },
+                o6: { value: 16, text: "shift" },
+                o7: { value: 18, text: "alt" },
+                o8: { value: 9, text: "tab" },
+                o9: { value: 32, text: "space" },
+                o10: { value: 45, text: "insert" },
+            }
+
+            var hitboxes = {
+                o1: { value: 10, text: "head" },
+                o2: { value: 9, text: "upper neck" },
+                o3: { value: 8, text: "neck" },
+                o4: { value: 7, text: "spine c" },
+                o5: { value: 6, text: "spine b" },
+                o6: { value: 5, text: "spine a" },
+                o7: { value: 14, text: "left shoulder" },
+                o8: { value: 39, text: "right shoulder" },
+            }
+
+            $.each(keys, function (i, item) {
+                $('.optKeys').append($('<option>', {
+                    value: item.value,
+                    text: item.text
+                }));
+            });
+
+            $.each(hitboxes, function (i, item) {
+                $('.optHitboxes').append($('<option>', {
+                    value: item.value,
+                    text: item.text
+                }));
+            });
+        })
+
         function onLoad() {
             // aimbot is the first tab so load it when the page is open
             loadElements(1);
         }
 
         function loadElements(tabIndex) {
+            var byId = function (id) { return document.getElementById(id); };
             if (tabIndex == 1) {
                 $.getJSON('http://192.168.1.200:2222/settings', function (json) {
                     let config = json.config
-                    document.getElementById('aimbotEnabled').checked = config.aimbot.enabled
-                    document.getElementById('aimbotSmooth').checked = config.aimbot.smooth_enabled
+                    byId('aimbotEnabled').checked = config.aimbot.enabled
+                    byId('aimbotSmooth').checked = config.aimbot.smooth_enabled
 
-                    document.getElementById('aimbotFov').value = config.aimbot.fov
-                    document.getElementById('fovNr').value = `${config.aimbot.fov.toFixed()} deg`
+                    byId('aimbotFov').value = config.aimbot.fov
+                    byId('fovNr').value = `${config.aimbot.fov.toFixed()} deg`
 
-                    document.getElementById('aimbotSmoothFactor').value = config.aimbot.smooth_factor
-                    document.getElementById('smoothFactorNr').value = config.aimbot.smooth_factor
+                    byId('aimbotSmoothFactor').value = config.aimbot.smooth_factor
+                    byId('smoothFactorNr').value = config.aimbot.smooth_factor
 
-                    document.getElementById('aimbotRcsEnabled').checked = config.aimbot.rcs_enabled
+                    byId('aimbotRcsEnabled').checked = config.aimbot.rcs_enabled
 
-                    document.getElementById('aimbotSelectionSwitchOnKey').checked = config.aimbot.target_selection_switch_on_key
-                    document.getElementById('aimbotSelectionSwitchKey').value = config.aimbot.target_selection_key
-                    document.getElementById('aimbotMaxDistance').value = config.aimbot.maximum_distance
-                    document.getElementById('aimMaxDistNr').value = `${config.aimbot.maximum_distance.toFixed()} m`
-                    document.getElementById('aimbotOnFriends').value = config.aimbot.aim_on_friends
-                    document.getElementById('aimbotVisCheck').value = config.aimbot.vis_check
-                    document.getElementById('aimbotRandomAimSpot').value = config.aimbot.random_aim_spot
-                    document.getElementById('aimbotOnDummies').value = false
-                    document.getElementById('aimbotKey').value = config.aimbot.key
-                    document.getElementById('aimbotPrimaryHitbox').value = config.aimbot.primary_hitbox
-                    document.getElementById('aimbotSecondaryHitboxKey').value = config.aimbot.secondary_hitbox_key
-                    document.getElementById('aimbotSecondaryHitbox').value = config.aimbot.secondary_hitbox
-                    document.getElementById('aimbotTargetLock').checked = config.aimbot.target_lock
+                    byId('aimbotSelectionSwitchOnKey').checked = config.aimbot.target_selection_switch_on_key
+                    byId('aimbotSelectionSwitchKey').value = config.aimbot.target_selection_key
+                    byId('aimbotMaxDistance').value = config.aimbot.maximum_distance
+                    byId('aimMaxDistNr').value = `${config.aimbot.maximum_distance.toFixed()} m`
+                    byId('aimbotOnFriends').value = config.aimbot.aim_on_friends
+                    byId('aimbotVisCheck').value = config.aimbot.vis_check
+                    byId('aimbotRandomAimSpot').value = config.aimbot.random_aim_spot
+                    byId('aimbotOnDummies').value = false
+                    byId('aimbotKey').value = config.aimbot.key
+                    byId('aimbotPrimaryHitbox').value = config.aimbot.primary_hitbox
+                    byId('aimbotSecondaryHitboxKey').value = config.aimbot.secondary_hitbox_key
+                    byId('aimbotSecondaryHitbox').value = config.aimbot.secondary_hitbox
+                    byId('aimbotTargetLock').checked = config.aimbot.target_lock
                 });
             } else if (tabIndex == 2) {
                 $.getJSON('http://192.168.1.200:2222/settings', function (json) {
                     let config = json.config
-                    document.getElementById('visualEnabled').checked = config.visual.enabled
-                    document.getElementById('visualItemEsp').checked = config.visual.item_esp
-                    document.getElementById('visualHighlight').checked = config.visual.glow_esp
-                    document.getElementById('visualHighlightAimTarget').checked = config.visual.aim_target_esp
-                    document.getElementById('visualHighlightFriends').checked = config.visual.highlight_friends
-                    document.getElementById('visualColoredHealth').checked = config.visual.color_health_based
-                    document.getElementById('visualHealthBasedAlpha').value = config.visual.health_based_alpha * 100
-                    document.getElementById('visualHealthAlphaNr').value = `${(config.visual.health_based_alpha * 100).toFixed()} %`
+                    byId('visualEnabled').checked = config.visual.enabled
+                    byId('visualItemEsp').checked = config.visual.item_esp
+                    byId('visualHighlight').checked = config.visual.glow_esp
+                    byId('visualHighlightAimTarget').checked = config.visual.aim_target_esp
+                    byId('visualHighlightFriends').checked = config.visual.highlight_friends
+                    byId('visualColoredHealth').checked = config.visual.color_health_based
+                    byId('visualHealthBasedAlpha').value = config.visual.health_based_alpha * 100
+                    byId('visualHealthAlphaNr').value = `${(config.visual.health_based_alpha * 100).toFixed()} %`
 
                     $(visualEspColor).spectrum({
                         color: `#${config.visual.esp_color}`
@@ -273,14 +280,14 @@
             }
         }
         function changeTab(i) {
-            var aim = document.getElementById('aim');
-            var aimTab = document.getElementById('aimbotTab');
+            var aim = byId('aim');
+            var aimTab = byId('aimbotTab');
 
-            var esp = document.getElementById('esp');
-            var espTab = document.getElementById('espTab');
+            var esp = byId('esp');
+            var espTab = byId('espTab');
 
-            var misc = document.getElementById('misc');
-            var miscTab = document.getElementById('miscTab');
+            var misc = byId('misc');
+            var miscTab = byId('miscTab');
 
             if (i == 1) {
                 aim.style.display = 'inline'
@@ -290,6 +297,7 @@
                 espTab.className = 'nav-item'
 
                 misc.style.display = 'none'
+                misc.className = 'nav-item'
                 loadElements(1)
             }
             else if (i == 2) {
