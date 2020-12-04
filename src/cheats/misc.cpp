@@ -11,7 +11,6 @@ using namespace std::chrono_literals;
 
 void apex::cheats::misc::run()
 {
-    bool print_once = false;
     while ( true ) {
 #ifndef NDEBUG
         if ( utils::is_key_down( utils::keycode_t::pause ) ) {

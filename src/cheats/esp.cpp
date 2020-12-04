@@ -40,97 +40,22 @@ void apex::cheats::esp::run()
             continue;
         }
 
-        /*std::uint16_t local_player_index;
-        if ( !utils::process::get().read( utils::process::get().base_address() + offsets_t::get().local_player_index, local_player_index ) || ( local_player_index == static_cast<uint16_t>( -1 ) ) ) {
-            continue;
-        }
-
-        sdk::ent_info_t local_info;
-
-        if ( auto read = utils::process::get().read(
-                 utils::process::get().base_address() + ( offsets_t::get().entity_list + local_player_index * sizeof( sdk::ent_info_t ) ),
-                 local_info );
-             !read || !local_info.entity_ptr ) {
-            continue;
-        }
-
-        sdk::player_t local_player { local_info.entity_ptr };
-        local_player.update();
-        if ( local_player.get_pos().z() > 11000.f ) {
-            continue;
-        }
-
-        for ( int i = 0; i < sdk::MAXENTRIES; ++i ) {
-            sdk::ent_info_t ei;
-            utils::process::get().read( utils::process::get().base_address() + ( offsets_t::get().entity_list + i * sizeof( sdk::ent_info_t ) ), ei );
-
-            if ( !ei.entity_ptr || ( i == local_player_index ) ) {
-                continue;
-            }
-
-            auto cid = static_cast<sdk::class_id>( get_class_id_esp( ei.entity_ptr ) );
-            if ( ( cid == sdk::class_id::CPlayer ) ) {
-                sdk::player_t player { ei.entity_ptr };
-                player.update();
-
-                if ( !player.is_alive() ) {
-                    continue;
-                }
-                static bool glow_enabled = true;
-                static int glow_time = 1;
-                static float glow_duration = std::numeric_limits<float>::max();
-                static float glow_distance = 5000.f;
-                static std::array<float, 6> max;
-                if ( max[ 0 ] != std::numeric_limits<float>::max() ) {
-                    max.fill( std::numeric_limits<float>::max() );
-                }
-                printf( "enabling glow for %d\n", i );
-                auto color = options->visual.esp_color;
-                std::array col {
-                    static_cast<float>( color.r() ) * 0.1f,
-                    static_cast<float>( color.g() ) * 0.1f,
-                    static_cast<float>( color.b() ) * 0.1f,
-                };
-                utils::process::get().write( player.get_base() + 0x360, glow_enabled );
-                utils::process::get().write( player.get_base() + 0x350, glow_time );
-                utils::process::get().write_ptr( player.get_base() + 0x1D0, col.data(), sizeof( float ) * 3 );
-                utils::process::get().write_ptr( player.get_base() + 0x310, max.data(), sizeof( float ) * max.size() );
-                //utils::process::get().write( player.get_base() + 0x32c, glow_duration );
-                utils::process::get().write( player.get_base() + 0x33c, glow_distance );
-            }
-
-            if ( ( cid == sdk::class_id::CPropSurvival ) ) {
-                sdk::item_t item { ei.entity_ptr };
-                item.update();
-
-                if ( !item.is_glown() ) {
-                    static int enable = 1363184265;
-                    utils::process::get().write( item.get_base() + 0x2a8, enable, sizeof( int ) );
-                }
-            }
-        }*/
-
         if ( !entity_list::get().get_local_player() || ( entity_list::get().get_local_player()->get_pos().z() > 11000.f ) ) {
             continue;
         }
 
-        std::vector<utils::io_data_t> write_list;
         for ( auto &e : entity_list::get() ) {
             if ( !e ) {
                 continue;
             }
 
             if ( ( options->visual.glow_esp ) && e->is_player() ) {
-                apply_glow( e->as<sdk::player_t>(), write_list );
+                apply_glow( e->as<sdk::player_t>() );
             }
 
             if ( ( options->visual.item_esp ) && e->is_item() ) {
-                apply_glow( e->as<sdk::item_t>(), write_list );
+                apply_glow( e->as<sdk::item_t>() );
             }
-        }
-
-        if ( !write_list.empty() ) {
-            utils::process::get().write_list( write_list );
         }
     }
 }
@@ -140,7 +65,7 @@ bool apex::cheats::esp::should_iterate() const noexcept
     return ( options->visual.enabled && ( options->visual.glow_esp || options->visual.item_esp ) ) && utils::are_movement_keys_pressed();
 }
 
-void apex::cheats::esp::apply_glow( sdk::player_t *entity, std::vector<utils::io_data_t> &write_list )
+void apex::cheats::esp::apply_glow( sdk::player_t *entity )
 {
     if ( !this->validate_player( entity ) ) {
         return;
@@ -193,7 +118,7 @@ void apex::cheats::esp::apply_glow( sdk::player_t *entity, std::vector<utils::io
         utils::process::get().write( entity->get_base() + 0x33c, glow_distance );
     }
 }
-void apex::cheats::esp::apply_glow( sdk::item_t *entity, std::vector<utils::io_data_t> &write_list )
+void apex::cheats::esp::apply_glow( sdk::item_t *entity )
 {
     if ( entity_list::get().validate( entity ) && !entity->is_glown() ) {
         int enable = 1363184265;
