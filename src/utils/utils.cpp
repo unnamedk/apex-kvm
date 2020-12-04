@@ -1,6 +1,7 @@
 #include "utils.hpp"
 
 #include "pe.hpp"
+#include "raii.hpp"
 #include <memory>
 #include <cmath>
 #include <thread>
@@ -37,12 +38,14 @@ bool apex::utils::is_key_down( keycode_t code )
         auto mod = apex::utils::pe_view { reinterpret_cast<std::uintptr_t>( module_buf.get() ), win32kbase_size };
         auto exp_gafAsyncKeyState = mod.get_export( "gafAsyncKeyState" );
 
-        return std::make_pair( win32kbase_address + exp_gafAsyncKeyState->rva, vmem );
+        return std::make_tuple( win32kbase_address + exp_gafAsyncKeyState->rva, user_process, vmem );
     }();
     static std::mutex key_mtx;
     std::lock_guard lock { key_mtx };
 
-    auto [ gafAsyncKeyState, vmem ] = values;
+    auto [ gafAsyncKeyState, user_process, vmem ] = values;
+    static owned_resource process_dtx { user_process, process_free };
+    static owned_resource vmem_dtx { vmem, virt_free };
 
     static std::array<std::uint8_t, 256 * 2 / 8>
         key_state_bitmap;
@@ -70,7 +73,7 @@ bool apex::utils::are_movement_keys_pressed()
     return is_key_down( static_cast<keycode_t>( 'W' ) ) || is_key_down( static_cast<keycode_t>( 'A' ) ) ||
         is_key_down( static_cast<keycode_t>( 'S' ) ) || is_key_down( static_cast<keycode_t>( 'D' ) );
 }
-std::optional<std::tuple<std::string, PID, Address>> apex::utils::get_process_by_id( Kernel *kernel, std::initializer_list<uint32_t> pids )
+std::optional<std::tuple<std::string, PID, Address>> apex::utils::get_process( Kernel *kernel, std::function<bool( std::string_view, PID )> validate_fn )
 {
     Win32ProcessInfo *processes[ 512 ];
     auto max = kernel_process_info_list( kernel, processes, 512 );
@@ -88,11 +91,9 @@ std::optional<std::tuple<std::string, PID, Address>> apex::utils::get_process_by
             os_process_info_name( info, name, 32 );
 
             auto pid = os_process_info_pid( info );
-            for ( auto &n : pids ) {
-                if ( pid == n ) {
-                    ans = std::make_tuple( std::string( name ), pid, process_info_section_base( process ) );
-                }
-            };
+            if ( validate_fn( name, pid ) ) {
+                ans = std::make_tuple( std::string( name ), pid, process_info_section_base( process ) );
+            }
 
             os_process_info_free( info );
         }

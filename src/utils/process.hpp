@@ -20,7 +20,10 @@ namespace apex::utils
     class process : public singleton<process>
     {
     public:
+        ~process();
+
         void set( std::uintptr_t base, std::uint32_t pid );
+        void reset();
         bool good() { return this->m_process != nullptr; }
 
         template <typename T>
@@ -40,7 +43,6 @@ namespace apex::utils
 
         bool write_ptr( std::uintptr_t remote_address, void *local_address, std::size_t size ) noexcept;
         bool write_list( const std::vector<io_data_t> &list ) noexcept;
-        bool in_range( std::uintptr_t address ) noexcept;
 
         std::uintptr_t base_address() const noexcept
         {

@@ -3,6 +3,7 @@
 #include <optional>
 #include <string>
 #include <tuple>
+#include <functional>
 
 #include "memflow.h"
 #include "memflow_win32.h"
@@ -62,6 +63,6 @@ namespace apex
         bool are_movement_keys_pressed();
         long current_tick();
 
-        std::optional<std::tuple<std::string, PID, Address>> get_process_by_id( Kernel *kernel, std::initializer_list<uint32_t> pids );
+        std::optional<std::tuple<std::string, PID, Address>> get_process( Kernel *kernel, std::function<bool( std::string_view, PID )> validate_fn );
     }
 }

@@ -174,6 +174,7 @@
         <hr>
         <button type="button" class="btn btn-primary" onclick="onSaveLoad('save')">save</button>
         <button type="button" class="btn btn-secondary" onclick="onSaveLoad('load')">load</button>
+        <button type="button" class="btn btn-secondary" onclick="onSaveLoad('exit')">exit</button>
     </main>
 
     <script>
@@ -222,10 +223,12 @@
             loadElements(1);
         }
 
+        var targetIp = "http://192.168.1.200:2222"
+
         function loadElements(tabIndex) {
             var byId = function (id) { return document.getElementById(id); };
             if (tabIndex == 1) {
-                $.getJSON('http://192.168.1.200:2222/settings', function (json) {
+                $.getJSON(`${targetIp}/settings`, function (json) {
                     let config = json.config
                     byId('aimbotEnabled').checked = config.aimbot.enabled
                     byId('aimbotSmooth').checked = config.aimbot.smooth_enabled
@@ -253,7 +256,7 @@
                     byId('aimbotTargetLock').checked = config.aimbot.target_lock
                 });
             } else if (tabIndex == 2) {
-                $.getJSON('http://192.168.1.200:2222/settings', function (json) {
+                $.getJSON(`${targetIp}/settings`, function (json) {
                     let config = json.config
                     byId('visualEnabled').checked = config.visual.enabled
                     byId('visualItemEsp').checked = config.visual.item_esp
@@ -326,20 +329,20 @@
         }
 
         function onSaveLoad(s) {
-            $.get(`http://192.168.1.200:2222/changed?t=fn&r=${s}`)
+            $.get(`${targetIp}/changed?t=fn&r=${s}`)
             loadElements(1)
         }
 
         function changedColor(name, id) {
             let clr = $(`#${id}`).spectrum('get').toHex8String().slice(1)
-            $.get(`http://192.168.1.200:2222/changed?t=color&r=${name}&v=${clr}`)
+            $.get(`${targetIp}/changed?t=color&r=${name}&v=${clr}`)
         }
         function changed(type, name, value) {
             if (type == 'color') {
                 type = 'value';
                 value = $(`#${value}`).spectrum('get').toHex8String().slice(1)
             }
-            $.get(`http://192.168.1.200:2222/changed?t=${type}&r=${name}&v=${value}`)
+            $.get(`${targetIp}/changed?t=${type}&r=${name}&v=${value}`)
         }
     </script>
 </body>

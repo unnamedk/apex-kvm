@@ -159,8 +159,11 @@ void aim::aim_at( sdk::entity_t *entity )
         return;
     }
 
+    if ( entity->is_player() ) {
+        options->aimbot.current_target = entity->as<sdk::player_t>()->get_base();
+    }
+
     angles.clamp();
-    options->aimbot.current_target = entity->is_player() ? entity->as<sdk::player_t>()->get_base() : entity->as<sdk::item_t>()->get_base();
     this->m_target_index = entity->index;
     utils::process::get().write( local_player->get_base() + offsets_t::get().local_angles, angles, sizeof( float ) * 2 );
 }

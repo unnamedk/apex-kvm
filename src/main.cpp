@@ -1,5 +1,6 @@
 #include <spdlog/spdlog.h>
 #include <thread>
+#include <atomic>
 #include "config/options.hpp"
 
 #include "memflow.h"
@@ -13,6 +14,7 @@
 
 #include "utils/pe.hpp"
 #include "utils/utils.hpp"
+#include "utils/raii.hpp"
 
 #include <cereal/cereal.hpp>
 #include <cereal/archives/json.hpp>
@@ -112,7 +114,7 @@ void start_server( const char *local_ip )
         res.set_content( json.str(), "application/json" );
     } );
 
-    srv.Get( "/changed", [ = ]( const Request &r, Response &res ) {
+    srv.Get( "/changed", [ & ]( const Request &r, Response &res ) {
         auto type = r.get_param_value( "t" );
         if ( type == "fn" ) {
             auto var = r.get_param_value( "r" );
@@ -123,6 +125,8 @@ void start_server( const char *local_ip )
                 options->save();
             } else if ( var == "load" ) {
                 options->load();
+            } else if ( var == "exit" ) {
+                srv.stop();
             }
         } else if ( type == "checkbox" ) {
             auto var = r.get_param_value( "r" );
@@ -174,6 +178,16 @@ void start_server( const char *local_ip )
         auto var = r.get_param_value( "r" );
     } );
 
+    std::thread stop_thread { [ & ]() {
+        while ( options->misc.should_run ) {
+            std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+        }
+
+        srv.stop();
+    } };
+
+    stop_thread.detach();
+
     spdlog::info( "starting web server" );
     srv.listen( local_ip, 2222 );
 }
@@ -183,52 +197,78 @@ void print_help( const char *path )
     spdlog::info( "usage: ./{} local_ip qemu_pid apex_pid", std::filesystem::path { path }.filename().string() );
 }
 
+std::atomic_bool g_interrupted;
+void catch_interrupt( int )
+{
+    options->misc.should_run = false;
+    g_interrupted = true;
+}
+
 int main( int argc, const char **argv )
 {
-    if ( argc < 4 ) {
+    if ( argc < 3 ) {
         spdlog::error( "invalid arguments" );
         print_help( argv[ 0 ] );
 
         return 1;
     }
 
+    struct sigaction sa
+    { };
+    sa.sa_handler = catch_interrupt;
+    sigfillset( &sa.sa_mask );
+    sigaction( SIGINT, &sa, nullptr );
+
     auto local_ip = argv[ 1 ];
     auto qemu_pid = argv[ 2 ];
-    auto apex_pid = argv[ 3 ];
+    auto apex_pid = ( argc == 4 ) ? argv[ 3 ] : nullptr;
 
     uint32_t apex_process_id = 0;
-    std::from_chars( apex_pid, apex_pid + strlen( apex_pid ), apex_process_id );
+    if ( apex_pid ) {
+        std::from_chars( apex_pid, apex_pid + strlen( apex_pid ), apex_process_id );
+    }
 
     apex::options.emplace();
-    apex::options->load();
     log_init( 1 );
 
-    ConnectorInventory *inv = inventory_try_new();
+    apex::utils::owned_resource inv { inventory_try_new(), inventory_free };
     CloneablePhysicalMemoryObj *conn = inventory_create_connector( inv, "kvm", qemu_pid );
     if ( !conn ) {
-        inventory_free( inv );
         return 0;
     }
 
-    auto kernel = kernel_build( conn );
-    auto ver = kernel_winver( kernel );
-
+    apex::utils::owned_resource kernel { kernel_build( conn ), kernel_free };
     if ( !kernel ) {
         spdlog::error( "error initializing kernel" );
-        inventory_free( inv );
         return 0;
     }
 
+    auto ver = kernel_winver( kernel );
     spdlog::info( "initialized successfully: windows {}.{} build {}", ver.nt_major_version,
         ver.nt_minor_version,
         ver.nt_build_number );
 
     apex::main_kernel = kernel;
 
-    auto apex_process = apex::utils::get_process_by_id( kernel, { apex_process_id } );
+    // if it specifies the target pid then use it
+    // apparently i don't free something so dead process stay alive in the process list
+    auto apex_process = apex::utils::get_process( kernel, [ apex_process_id ]( std::string_view name, PID pid ) {
+        if ( apex_process_id ) {
+            return pid == apex_process_id;
+        }
+
+        else {
+            auto processes = { "r5apex.exe", "EasyAntiCheat_launcher.exe" };
+            for ( auto &n : processes ) {
+                if ( n == name ) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    } );
     if ( !apex_process ) {
-        kernel_free( kernel );
-        inventory_free( inv );
         spdlog::error( "game process (id {}) not found", apex_process_id );
         return 1;
     }
@@ -254,9 +294,10 @@ int main( int argc, const char **argv )
     t_aim.detach();
     t_esp.detach();
 
-    // blocks
+    // blocks until user wants to exit
     start_server( local_ip );
 
-    // only runs if an error occurs
-    inventory_free( inv );
+    spdlog::info( "exiting..." );
+    options->save();
+    apex::utils::process::get().reset();
 }
