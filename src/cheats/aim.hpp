@@ -38,6 +38,8 @@ namespace apex
             void aim_at( sdk::entity_t *entity );
 
             float smooth_x, smooth_y;
+            float rand_aim_x, rand_aim_y, rand_aim_z;
+
             int m_target_index;
             void reset_state();
         };

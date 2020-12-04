@@ -65,6 +65,8 @@ void build_map()
     setting_map[ "aimbot.secondary_hitbox_key" ] = to_type( &options->aimbot.secondary_hitbox_key );
     setting_map[ "aimbot.secondary_hitbox" ] = to_type( &options->aimbot.secondary_hitbox );
     setting_map[ "aimbot.target_lock" ] = to_type( &options->aimbot.target_lock );
+    setting_map[ "aimbot.vis_check" ] = to_type( &options->aimbot.vis_check );
+    setting_map[ "aimbot.random_aim_spot" ] = to_type( &options->aimbot.random_aim_spot );
 
     setting_map[ "visual.enabled" ] = to_type( &options->visual.enabled );
     setting_map[ "visual.item_esp" ] = to_type( &options->visual.item_esp );

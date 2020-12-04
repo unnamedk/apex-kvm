@@ -40,13 +40,13 @@ namespace apex
                 std::int32_t key = 0;
 
                 bool smooth_enabled = true;
-                float smooth_factor = 4.f;
+                float smooth_factor = 11.f;
 
                 float maximum_distance = 75.f;
                 float fov = 45.f;
 
                 bool aim_on_friends = false;
-                bool rcs_enabled = false;
+                bool rcs_enabled = true;
 
                 std::int32_t primary_hitbox = 0;
 
@@ -58,6 +58,7 @@ namespace apex
 
                 bool aim_on_dummies = false;
                 bool vis_check = false;
+                bool random_aim_spot = true;
                 bool target_lock = false;
 
                 std::uintptr_t current_target = 0ull;
@@ -69,7 +70,7 @@ namespace apex
                         CEREAL_NVP( smooth_enabled ), CEREAL_NVP( smooth_factor ), CEREAL_NVP( rcs_enabled ),
                         CEREAL_NVP( primary_hitbox ), CEREAL_NVP( secondary_hitbox ), CEREAL_NVP( secondary_hitbox_key ),
                         CEREAL_NVP( target_selection_switch_on_key ), CEREAL_NVP( target_selection_key ),
-                        CEREAL_NVP( maximum_distance ), CEREAL_NVP( aim_on_friends ), CEREAL_NVP( target_lock ), CEREAL_NVP( vis_check ) );
+                        CEREAL_NVP( maximum_distance ), CEREAL_NVP( aim_on_friends ), CEREAL_NVP( target_lock ), CEREAL_NVP( vis_check ), CEREAL_NVP( random_aim_spot ) );
                 }
             } aimbot;
 

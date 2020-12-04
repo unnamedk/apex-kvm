@@ -27,3 +27,4 @@ build
 # local files
 deps/
 *.json
+deps/memflow

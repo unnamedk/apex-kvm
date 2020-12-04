@@ -226,9 +226,16 @@ bool aim::validate_entity( sdk::entity_t *entity ) const noexcept
 }
 apex::math::vector3 aim::select_pos( sdk::entity_t *entity )
 {
+    math::vector3 random_factor { rand_aim_x, rand_aim_y, rand_aim_z };
+
     if ( entity->is_dummy() ) {
         auto pos = entity->as<sdk::player_t>()->get_pos();
         pos.z() += 64.f;
+
+        if ( options->aimbot.random_aim_spot ) {
+            pos = pos + random_factor;
+        }
+
         return pos;
     }
 
@@ -245,7 +252,12 @@ apex::math::vector3 aim::select_pos( sdk::entity_t *entity )
     utils::process::get().read( bone_matrix + 0xdc + static_cast<uintptr_t>( bone_index ) * 0x30, y );
     utils::process::get().read( bone_matrix + 0xec + static_cast<uintptr_t>( bone_index ) * 0x30, z );
 
-    return math::vector3 { x, y, z } + player->get_pos();
+    auto ans = math::vector3 { x, y, z } + player->get_pos();
+    if ( options->aimbot.random_aim_spot ) {
+        ans = ans + random_factor;
+    }
+
+    return ans;
 }
 bool aim::compensate_pos( sdk::player_t *player, math::vector3 &pos, math::qangle &ang )
 {
@@ -296,6 +308,12 @@ void aim::reset_state()
     while ( abs( smooth_x - smooth_y ) < 0.3f ) {
         this->smooth_x = options->aimbot.smooth_factor + math::rand_float( -1.f, 2.3f );
         this->smooth_y = options->aimbot.smooth_factor + math::rand_float( -0.8f, 1.3f );
+    }
+
+    if ( options->aimbot.random_aim_spot ) {
+        rand_aim_x = 0.f;
+        rand_aim_y = math::rand_float( -1.7f, 2.f );
+        rand_aim_z = math::rand_float( -0.3f, 2.1f );
     }
 }
 

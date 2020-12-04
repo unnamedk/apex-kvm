@@ -94,6 +94,9 @@
             <label for="aimbotTargetLock">target lock</label><br>
             <input type="checkbox" id="aimbotVisCheck" onchange="changed('checkbox', 'aimbot.vis_check', this.checked)">
             <label for="aimbotVisCheck">visibility check</label><br>
+            <input type="checkbox" id="aimbotRandomAimSpot"
+                onchange="changed('checkbox', 'aimbot.random_aim_spot', this.checked)">
+            <label for="aimbotRandomAimSpot">random aim spot</label><br>
 
             <input type="checkbox" id="aimbotSelectionSwitchOnKey"
                 onchange="changed('checkbox', 'aimbot.target_selection_switch_on_key', this.checked)">
@@ -178,7 +181,7 @@
             <label for="visualColoredHealth">color based on health</label><br>
 
             <input type="range" id="visualHealthBasedAlpha" name="visualHealthBasedAlpha" min="1" max="100"
-                onchange="changed('value', 'visual.health_based_alpha', this.value / 100)"
+                onchange="changed('value', 'visual.health_based_alpha', (this.value / 100).toFixed())"
                 oninput="(visualHealthAlphaNr.value=this.value)">
             <label for="visualHealthAlphaLabel">glow transparency on health</label>
             <input type="text" id="visualHealthAlphaNr" value="0" min=0 max=100 class="slider-value"> <br>
@@ -221,7 +224,7 @@
                     document.getElementById('aimbotSmooth').checked = config.aimbot.smooth_enabled
 
                     document.getElementById('aimbotFov').value = config.aimbot.fov
-                    document.getElementById('fovNr').value = `${config.aimbot.fov} deg`
+                    document.getElementById('fovNr').value = `${config.aimbot.fov.toFixed()} deg`
 
                     document.getElementById('aimbotSmoothFactor').value = config.aimbot.smooth_factor
                     document.getElementById('smoothFactorNr').value = config.aimbot.smooth_factor
@@ -231,9 +234,10 @@
                     document.getElementById('aimbotSelectionSwitchOnKey').checked = config.aimbot.target_selection_switch_on_key
                     document.getElementById('aimbotSelectionSwitchKey').value = config.aimbot.target_selection_key
                     document.getElementById('aimbotMaxDistance').value = config.aimbot.maximum_distance
-                    document.getElementById('aimMaxDistNr').value = `${config.aimbot.maximum_distance} m`
+                    document.getElementById('aimMaxDistNr').value = `${config.aimbot.maximum_distance.toFixed()} m`
                     document.getElementById('aimbotOnFriends').value = config.aimbot.aim_on_friends
                     document.getElementById('aimbotVisCheck').value = config.aimbot.vis_check
+                    document.getElementById('aimbotRandomAimSpot').value = config.aimbot.random_aim_spot
                     document.getElementById('aimbotOnDummies').value = false
                     document.getElementById('aimbotKey').value = config.aimbot.key
                     document.getElementById('aimbotPrimaryHitbox').value = config.aimbot.primary_hitbox
@@ -251,7 +255,7 @@
                     document.getElementById('visualHighlightFriends').checked = config.visual.highlight_friends
                     document.getElementById('visualColoredHealth').checked = config.visual.color_health_based
                     document.getElementById('visualHealthBasedAlpha').value = config.visual.health_based_alpha * 100
-                    document.getElementById('visualHealthAlphaNr').value = `${config.visual.health_based_alpha * 100} %`
+                    document.getElementById('visualHealthAlphaNr').value = `${(config.visual.health_based_alpha * 100).toFixed()} %`
 
                     $(visualEspColor).spectrum({
                         color: `#${config.visual.esp_color}`
