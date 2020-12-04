@@ -12,7 +12,7 @@ namespace apex
         namespace detail
         {
             template <class Archive, typename... Args>
-            void safe_serialize( Archive &a, Args &&...args )
+            void safe_serialize( Archive &a, Args &&... args )
             {
                 // don't crash when an expected NVP is not found
                 try {
@@ -57,6 +57,7 @@ namespace apex
                 std::int32_t target_selection_key = 0;
 
                 bool aim_on_dummies = false;
+                bool vis_check = false;
                 bool target_lock = false;
 
                 std::uintptr_t current_target = 0ull;
@@ -68,7 +69,7 @@ namespace apex
                         CEREAL_NVP( smooth_enabled ), CEREAL_NVP( smooth_factor ), CEREAL_NVP( rcs_enabled ),
                         CEREAL_NVP( primary_hitbox ), CEREAL_NVP( secondary_hitbox ), CEREAL_NVP( secondary_hitbox_key ),
                         CEREAL_NVP( target_selection_switch_on_key ), CEREAL_NVP( target_selection_key ),
-                        CEREAL_NVP( maximum_distance ), CEREAL_NVP( aim_on_friends ), CEREAL_NVP( target_lock ) );
+                        CEREAL_NVP( maximum_distance ), CEREAL_NVP( aim_on_friends ), CEREAL_NVP( target_lock ), CEREAL_NVP( vis_check ) );
                 }
             } aimbot;
 

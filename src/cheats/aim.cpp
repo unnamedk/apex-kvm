@@ -196,10 +196,14 @@ bool aim::validate_entity( sdk::entity_t *entity ) const noexcept
             return false;
         }
 
-        // marked as 'friend'
-        if ( player->priority == -1 ) {
+        if ( options->aimbot.vis_check && !player->is_visible() ) {
             return false;
         }
+
+        // marked as 'friend'
+        /*if ( player->priority == -1 ) {
+            return false;
+        }*/
 
         return true;
     }
@@ -286,7 +290,7 @@ void aim::reset_state()
     options->aimbot.current_target = 0ull;
     this->m_target_index = 0;
 
-    // smooth values must be at least 0.7 apart
+    // smooth values must be at least 0.3 apart
     this->smooth_x = 0.f;
     this->smooth_y = 0.f;
     while ( abs( smooth_x - smooth_y ) < 0.3f ) {

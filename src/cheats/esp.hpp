@@ -26,8 +26,8 @@ namespace apex
             bool should_iterate() const noexcept;
             bool validate_player( sdk::player_t *player ) const noexcept;
 
-            void apply_glow( sdk::player_t *entity, std::vector<utils::write_data_t> &write_data );
-            void apply_glow( sdk::item_t *entity, std::vector<utils::write_data_t> &write_data );
+            void apply_glow( sdk::player_t *entity, std::vector<utils::io_data_t> &write_data );
+            void apply_glow( sdk::item_t *entity, std::vector<utils::io_data_t> &write_data );
             void get_color_for_entity( sdk::player_t *player, std::array<float, 3> &clr );
         };
     }

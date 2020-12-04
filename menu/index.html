@@ -92,6 +92,8 @@
             <input type="checkbox" id="aimbotTargetLock"
                 onchange="changed('checkbox', 'aimbot.target_lock', this.checked)">
             <label for="aimbotTargetLock">target lock</label><br>
+            <input type="checkbox" id="aimbotVisCheck" onchange="changed('checkbox', 'aimbot.vis_check', this.checked)">
+            <label for="aimbotVisCheck">visibility check</label><br>
 
             <input type="checkbox" id="aimbotSelectionSwitchOnKey"
                 onchange="changed('checkbox', 'aimbot.target_selection_switch_on_key', this.checked)">
@@ -229,8 +231,9 @@
                     document.getElementById('aimbotSelectionSwitchOnKey').checked = config.aimbot.target_selection_switch_on_key
                     document.getElementById('aimbotSelectionSwitchKey').value = config.aimbot.target_selection_key
                     document.getElementById('aimbotMaxDistance').value = config.aimbot.maximum_distance
-                    document.getElementById('aimMaxDistNr').value = config.aimbot.maximum_distance
+                    document.getElementById('aimMaxDistNr').value = `${config.aimbot.maximum_distance} m`
                     document.getElementById('aimbotOnFriends').value = config.aimbot.aim_on_friends
+                    document.getElementById('aimbotVisCheck').value = config.aimbot.vis_check
                     document.getElementById('aimbotOnDummies').value = false
                     document.getElementById('aimbotKey').value = config.aimbot.key
                     document.getElementById('aimbotPrimaryHitbox').value = config.aimbot.primary_hitbox
@@ -248,7 +251,7 @@
                     document.getElementById('visualHighlightFriends').checked = config.visual.highlight_friends
                     document.getElementById('visualColoredHealth').checked = config.visual.color_health_based
                     document.getElementById('visualHealthBasedAlpha').value = config.visual.health_based_alpha * 100
-                    document.getElementById('visualHealthAlphaNr').value = `${config.visual.health_based_alpha * 100} m`
+                    document.getElementById('visualHealthAlphaNr').value = `${config.visual.health_based_alpha * 100} %`
 
                     $(visualEspColor).spectrum({
                         color: `#${config.visual.esp_color}`

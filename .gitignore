@@ -26,3 +26,4 @@ build
 
 # local files
 deps/
+*.json

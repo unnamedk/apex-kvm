@@ -10,7 +10,7 @@
 
 namespace apex::utils
 {
-    struct write_data_t
+    struct io_data_t
     {
         Address remote_address;
         std::uint8_t *local_buffer;
@@ -36,8 +36,10 @@ namespace apex::utils
         }
 
         bool read_ptr( std::uintptr_t remote_address, void *local_address, std::size_t size ) noexcept;
+        bool read_list( const std::vector<io_data_t> &list ) noexcept;
+
         bool write_ptr( std::uintptr_t remote_address, void *local_address, std::size_t size ) noexcept;
-        bool write_list( const std::vector<write_data_t> &list ) noexcept;
+        bool write_list( const std::vector<io_data_t> &list ) noexcept;
         bool in_range( std::uintptr_t address ) noexcept;
 
         std::uintptr_t base_address() const noexcept

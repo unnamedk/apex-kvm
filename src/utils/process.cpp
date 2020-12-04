@@ -29,7 +29,7 @@ bool apex::utils::process::write_ptr( std::uintptr_t remote_address, void *local
     std::lock_guard lg { m_mutex };
     return virt_write_raw( this->m_mem, remote_address, static_cast<uint8_t *>( local_address ), size ) != -1;
 }
-bool apex::utils::process::write_list( const std::vector<write_data_t> &list ) noexcept
+bool apex::utils::process::write_list( const std::vector<io_data_t> &list ) noexcept
 {
     std::lock_guard lg { m_mutex };
     return virt_write_raw_list( this->m_mem, reinterpret_cast<const VirtualWriteData *>( list.data() ), list.size() ) != -1;

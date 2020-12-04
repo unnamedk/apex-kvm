@@ -114,7 +114,7 @@ void apex::cheats::esp::run()
             continue;
         }
 
-        std::vector<utils::write_data_t> write_list;
+        std::vector<utils::io_data_t> write_list;
         for ( auto &e : entity_list::get() ) {
             if ( !e ) {
                 continue;
@@ -140,7 +140,7 @@ bool apex::cheats::esp::should_iterate() const noexcept
     return ( options->visual.enabled && ( options->visual.glow_esp || options->visual.item_esp ) ) && utils::are_movement_keys_pressed();
 }
 
-void apex::cheats::esp::apply_glow( sdk::player_t *entity, std::vector<utils::write_data_t> &write_list )
+void apex::cheats::esp::apply_glow( sdk::player_t *entity, std::vector<utils::io_data_t> &write_list )
 {
     if ( !this->validate_player( entity ) ) {
         return;
@@ -193,7 +193,7 @@ void apex::cheats::esp::apply_glow( sdk::player_t *entity, std::vector<utils::wr
         utils::process::get().write( entity->get_base() + 0x33c, glow_distance );
     }
 }
-void apex::cheats::esp::apply_glow( sdk::item_t *entity, std::vector<utils::write_data_t> &write_list )
+void apex::cheats::esp::apply_glow( sdk::item_t *entity, std::vector<utils::io_data_t> &write_list )
 {
     if ( entity_list::get().validate( entity ) && !entity->is_glown() ) {
         int enable = 1363184265;
