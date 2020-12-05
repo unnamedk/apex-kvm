@@ -49,7 +49,7 @@ bool player_t::is_visible()
     const auto vis_check = this->get_last_visible_time();
 
     // If the player was never visible the value is -1
-    const auto is_vis = ( vis_check > visible_map[ this->index ] ) || ( ( vis_check < 0.f ) && ( visible_map[ this->index ] > 0.f ) );
+    const auto is_vis = ( vis_check >= visible_map[ this->index ] );
 
     visible_map[ this->index ] = vis_check;
     return is_vis;
@@ -57,7 +57,7 @@ bool player_t::is_visible()
 
 bool apex::sdk::player_t::is_alive()
 {
-    return ( ( this->get_health() > 0 ) );
+    return ( this->get_health() > 0 );
 }
 
 void apex::sdk::item_t::update()

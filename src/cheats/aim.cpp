@@ -6,32 +6,10 @@
 #include "offsets.hpp"
 
 #include <thread>
+#include <map>
 
 using apex::cheats::aim;
 using namespace std::chrono_literals;
-
-int get_class_id_aim( std::uintptr_t ent )
-{
-    std::uintptr_t client_nttable = 0u;
-    if ( apex::utils::process::get().read<std::uintptr_t>( ent + 24, client_nttable ); !client_nttable ) {
-        return -1;
-    }
-
-    std::uintptr_t get_client_class_fn = 0u;
-    if ( apex::utils::process::get().read<std::uintptr_t>( client_nttable + 24, get_client_class_fn ); !( get_client_class_fn ) ) {
-        return -1;
-    }
-
-    std::uint32_t relative_table_offs = 0u;
-    if ( apex::utils::process::get().read<std::uint32_t>( get_client_class_fn + 3, relative_table_offs ); !( relative_table_offs ) ) {
-        return -1;
-    }
-
-    auto id = 0;
-    apex::utils::process::get().read<std::int32_t>( get_client_class_fn + relative_table_offs + 7 + 0x28, id );
-
-    return id;
-}
 
 void aim::run()
 {
@@ -327,12 +305,16 @@ void aim::reset_state()
 bool aim::smooth( math::qangle &angles )
 {
     auto current_angle = entity_list::get().get_local_player()->get_angles();
+
+    // start at 85% speed and go up to 120% depending on fov
+    float multiplier = std::min( std::max( 1.2f - ( math::get_fov( angles, current_angle ) * 0.8f ), 0.85f ), 1.2f );
+
     auto delta = angles - current_angle;
     delta.clamp();
 
     if ( !delta.is_zero() ) {
-        delta.x() /= std::max( smooth_x, 1.5f );
-        delta.y() /= std::max( smooth_y, 1.5f );
+        delta.x() /= std::max( smooth_x * multiplier, 1.5f );
+        delta.y() /= std::max( smooth_y * multiplier, 1.5f );
     }
 
     angles = current_angle + delta;

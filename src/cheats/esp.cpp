@@ -6,31 +6,7 @@
 #include "utils/process.hpp"
 #include "utils/utils.hpp"
 #include "config/options.hpp"
-#include <spdlog/spdlog.h>
 #include "offsets.hpp"
-
-int get_class_id_esp( std::uintptr_t ent )
-{
-    std::uintptr_t client_nttable = 0u;
-    if ( apex::utils::process::get().read<std::uintptr_t>( ent + 24, client_nttable ); !client_nttable ) {
-        return -1;
-    }
-
-    std::uintptr_t get_client_class_fn = 0u;
-    if ( apex::utils::process::get().read<std::uintptr_t>( client_nttable + 24, get_client_class_fn ); !( get_client_class_fn ) ) {
-        return -1;
-    }
-
-    std::uint32_t relative_table_offs = 0u;
-    if ( apex::utils::process::get().read<std::uint32_t>( get_client_class_fn + 3, relative_table_offs ); !( relative_table_offs ) ) {
-        return -1;
-    }
-
-    auto id = 0;
-    apex::utils::process::get().read<std::int32_t>( get_client_class_fn + relative_table_offs + 7 + 0x28, id );
-
-    return id;
-}
 
 void apex::cheats::esp::run()
 {
@@ -106,9 +82,7 @@ void apex::cheats::esp::apply_glow( sdk::player_t *entity )
     int glow_time = 1;
     float glow_distance = 5000.f;
     std::array<float, 6> max;
-    if ( max[ 0 ] != std::numeric_limits<float>::max() ) {
-        max.fill( std::numeric_limits<float>::max() );
-    }
+    max.fill( std::numeric_limits<float>::max() );
 
     if ( entity_list::get().validate( entity ) ) {
         utils::process::get().write( entity->get_base() + 0x360, glow_enabled );
