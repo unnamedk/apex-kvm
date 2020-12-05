@@ -218,6 +218,10 @@ bool aim::validate_entity( sdk::entity_t *entity ) const noexcept
             return false;
         }
 
+        if ( options->aimbot.vis_check && !dummy->is_visible() ) {
+            return false;
+        }
+
         if ( ( dummy->get_pos().distance_from( local_player->get_pos() ) * 0.01905f ) > options->aimbot.maximum_distance ) {
             return false;
         }

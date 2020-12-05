@@ -57,7 +57,7 @@ bool player_t::is_visible()
 
 bool apex::sdk::player_t::is_alive()
 {
-    return ( ( this->get_health() > 0 ) && ( this->get_health() <= 100 ) ) && ( this->get_bleedout_state() == apex::sdk::bleedout_state_t::alive );
+    return ( ( this->get_health() > 0 ) );
 }
 
 void apex::sdk::item_t::update()
