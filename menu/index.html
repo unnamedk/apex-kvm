@@ -244,10 +244,10 @@
                     byId('aimbotSelectionSwitchKey').value = config.aimbot.target_selection_key
                     byId('aimbotMaxDistance').value = config.aimbot.maximum_distance
                     byId('aimMaxDistNr').value = `${config.aimbot.maximum_distance.toFixed()} m`
-                    byId('aimbotOnFriends').value = config.aimbot.aim_on_friends
-                    byId('aimbotVisCheck').value = config.aimbot.vis_check
-                    byId('aimbotRandomAimSpot').value = config.aimbot.random_aim_spot
-                    byId('aimbotOnDummies').value = false
+                    byId('aimbotOnFriends').checked = config.aimbot.aim_on_friends
+                    byId('aimbotVisCheck').checked = config.aimbot.vis_check
+                    byId('aimbotRandomAimSpot').checked = config.aimbot.random_aim_spot
+                    byId('aimbotOnDummies').checked = false
                     byId('aimbotKey').value = config.aimbot.key
                     byId('aimbotPrimaryHitbox').value = config.aimbot.primary_hitbox
                     byId('aimbotSecondaryHitboxKey').value = config.aimbot.secondary_hitbox_key
